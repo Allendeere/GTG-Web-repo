@@ -2,9 +2,8 @@
 import React, { useState, useRef } from 'react'
 import { User, Camera, Mail, Lock, Bell, Shield, Save, X, Upload, CheckCircle, AlertCircle } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
-import { lumi } from '../lib/lumi'
 import toast from 'react-hot-toast'
-
+import { supabase } from "../lib/supabaseClient.ts";
 interface UserProfile {
     userName: string
     email: string
@@ -59,17 +58,41 @@ const UserSettings: React.FC = () => {
     const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files
         if (!files || files.length === 0) return
+        if (!user?.email) return
 
         try {
             setAvatarUploading(true)
-            const results = await lumi.tools.file.upload(Array.from(files))
+            const file = files[0];
+            const fileExt = file.name.split('.').pop();
+            // 將 @ 和 . 替換成底線
+            const safeEmail = user.email.replace(/[@.]/g, '_');
+            const fileName = `${safeEmail}_${Date.now()}.${fileExt}`;
 
-            if (results[0]?.fileUrl) {
-                setProfile(prev => ({ ...prev, avatar: results[0].fileUrl || '' }))
-                toast.success('頭像上傳成功')
-            } else if (results[0]?.uploadError) {
-                toast.error(`上傳失敗: ${results[0].uploadError}`)
-            }
+            // 注意：bucket 名稱直接放在 from()，不要在路徑重複
+            const { data, error: uploadError } = await supabase.storage
+                .from('avatars')       // bucket 名稱
+                .upload(fileName, file, { upsert: true })
+
+            if (uploadError) throw uploadError
+
+            const { publicUrl, error: urlError } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName)
+
+            if (urlError) throw urlError
+
+            // 更新 users 表
+            const { error: updateError } = await supabase
+                .from('users')
+                .update({ picture: publicUrl })
+                .eq('email', user.email)
+
+            if (updateError) throw updateError
+
+            setProfile(prev => ({ ...prev, avatar: publicUrl }))
+            setUser(prev => prev ? { ...prev, picture: publicUrl } : prev)
+            toast.success('頭像上傳成功')
+
         } catch (error) {
             console.error('Avatar upload failed:', error)
             toast.error('頭像上傳失敗')
@@ -77,6 +100,7 @@ const UserSettings: React.FC = () => {
             setAvatarUploading(false)
         }
     }
+
 
     // 保存個人資料
     const handleSaveProfile = async () => {
