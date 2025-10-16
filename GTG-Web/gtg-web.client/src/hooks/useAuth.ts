@@ -1,70 +1,60 @@
-
-import { useState, useEffect } from 'react'
-import { lumi } from '../lib/lumi'
+import { useState } from 'react'
+import { useGoogleLogin, googleLogout } from '@react-oauth/google'
+import axios from 'axios'
 
 interface User {
-    projectId: string
-    userId: string
     email: string
-    userName: string
-    userRole: 'ADMIN' | 'USER'
-    createdTime: string
+    name: string
+    picture: string
     accessToken: string
 }
 
 export function useAuth() {
-    const [user, setUser] = useState<User | null>(lumi.auth.user)
+    const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(false)
 
-    useEffect(() => {
-        // 檢查現有會話
-        const checkSession = () => {
-            const existingUser = lumi.auth.user
-            const isLoggedIn = lumi.auth.isAuthenticated
+    const signIn = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                setLoading(true)
 
-            if (isLoggedIn && existingUser) {
-                setUser(existingUser)
+                // 取用戶資訊
+                const { data } = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                })
+
+                const newUser: User = {
+                    email: data.email,
+                    name: data.name,
+                    picture: data.picture,
+                    accessToken: tokenResponse.access_token,
+                }
+
+                setUser(newUser)
+                localStorage.setItem('user', JSON.stringify(newUser))
+            } catch (error) {
+                console.error('取得使用者資訊失敗:', error)
+            } finally {
+                setLoading(false)
             }
-        }
-
-        checkSession()
-
-        // 監聽認證狀態變化
-        const unsubscribe = lumi.auth.onAuthChange((user: User | null) => {
-            setUser(user)
+        },
+        onError: (error) => {
+            console.error('Google 登入失敗:', error)
             setLoading(false)
-        })
+        },
+    })
 
-        return unsubscribe
-    }, [])
-
-    const signIn = async () => {
-        try {
-            setLoading(true)
-            await lumi.auth.signIn()
-        } catch (error) {
-            console.error('登入失敗:', error)
-            setLoading(false)
-        }
-    }
-
-    const signOut = async () => {
-        try {
-            setLoading(true)
-            await lumi.auth.signOut()
-        } catch (error) {
-            console.error('登出失敗:', error)
-            setLoading(false)
-        }
+    const signOut = () => {
+        googleLogout()
+        setUser(null)
+        localStorage.removeItem('user')
     }
 
     return {
         user,
         isAuthenticated: !!user,
-        isAdmin: user?.userRole === 'ADMIN',
-        isUser: user?.userRole === 'USER',
         loading,
         signIn,
-        signOut
+        signOut,
     }
 }

@@ -6,10 +6,12 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "build:dev": "vite build --mode development",
-        "lint": "eslint .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d docs"
     },
+
+
     "dependencies": {
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -23,6 +25,8 @@
         "react-hot-toast": "^2.6.0",
         "@lumi.new/sdk": "0.2.1"
     },
+    "homepage": "https://allendeere.github.io/GTG-Web-repo/",
+
     "devDependencies": {
         "@types/react": "^18.3.5",
         "@types/react-dom": "^18.3.0",
