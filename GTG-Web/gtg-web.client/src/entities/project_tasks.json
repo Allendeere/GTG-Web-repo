@@ -1,0 +1,84 @@
+{
+    "name": "project_tasks",
+    "options": {
+        "validator": {
+            "$jsonSchema": {
+                "bsonType": "object",
+                "required": [ "title", "category", "priority", "status", "assignedTo", "dueDate", "createdAt" ],
+                "properties": {
+                    "title": {
+                        "bsonType": "string",
+                        "description": "任務標題"
+                    },
+                    "description": {
+                        "bsonType": "string",
+                        "description": "任務描述"
+                    },
+                    "category": {
+                        "bsonType": "string",
+                        "enum": [ "organization", "supplies", "machine_development", "spiritual", "research", "testing" ],
+                        "description": "任務分類"
+                    },
+                    "priority": {
+                        "bsonType": "string",
+                        "enum": [ "low", "medium", "high", "urgent" ],
+                        "description": "優先級"
+                    },
+                    "status": {
+                        "bsonType": "string",
+                        "enum": [ "todo", "in_progress", "review", "completed", "cancelled" ],
+                        "description": "任務狀態"
+                    },
+                    "assignedTo": {
+                        "bsonType": "string",
+                        "description": "負責人"
+                    },
+                    "collaborators": {
+                        "bsonType": "array",
+                        "items": { "bsonType": "string" },
+                        "description": "協作者"
+                    },
+                    "progress": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "完成進度"
+                    },
+                    "estimatedHours": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "description": "預估工時"
+                    },
+                    "actualHours": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "description": "實際工時"
+                    },
+                    "dueDate": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "截止日期"
+                    },
+                    "completedAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "完成時間"
+                    },
+                    "createdAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "建立時間"
+                    },
+                    "updatedAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "更新時間"
+                    }
+                },
+                "additionalProperties": true
+            }
+        },
+        "validationLevel": "moderate",
+        "validationAction": "warn"
+    }
+}

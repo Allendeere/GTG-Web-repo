@@ -1,0 +1,78 @@
+{
+    "name": "machine_modules",
+    "options": {
+        "validator": {
+            "$jsonSchema": {
+                "bsonType": "object",
+                "required": [ "name", "type", "status", "assignedTo", "progress", "createdAt" ],
+                "properties": {
+                    "name": {
+                        "bsonType": "string",
+                        "description": "模塊名稱"
+                    },
+                    "type": {
+                        "bsonType": "string",
+                        "enum": [ "lighting", "power", "ai_vision", "sound_wave", "electric_stimulation", "temperature_control", "dual_flow", "plant_research" ],
+                        "description": "模塊類型"
+                    },
+                    "description": {
+                        "bsonType": "string",
+                        "description": "模塊描述"
+                    },
+                    "status": {
+                        "bsonType": "string",
+                        "enum": [ "planning", "development", "testing", "completed", "suspended" ],
+                        "description": "開發狀態"
+                    },
+                    "progress": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "description": "完成進度百分比"
+                    },
+                    "assignedTo": {
+                        "bsonType": "string",
+                        "description": "負責人"
+                    },
+                    "team": {
+                        "bsonType": "array",
+                        "items": { "bsonType": "string" },
+                        "description": "團隊成員"
+                    },
+                    "specifications": {
+                        "bsonType": "object",
+                        "description": "技術規格"
+                    },
+                    "dependencies": {
+                        "bsonType": "array",
+                        "items": { "bsonType": "string" },
+                        "description": "依賴的其他模塊"
+                    },
+                    "estimatedCompletion": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "預計完成時間"
+                    },
+                    "actualCompletion": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "實際完成時間"
+                    },
+                    "createdAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "建立時間"
+                    },
+                    "updatedAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "更新時間"
+                    }
+                },
+                "additionalProperties": true
+            }
+        },
+        "validationLevel": "moderate",
+        "validationAction": "warn"
+    }
+}

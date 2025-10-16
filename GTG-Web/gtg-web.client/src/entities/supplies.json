@@ -1,0 +1,76 @@
+{
+    "name": "supplies",
+    "options": {
+        "validator": {
+            "$jsonSchema": {
+                "bsonType": "object",
+                "required": [ "name", "category", "quantity", "unit", "location", "status", "createdAt" ],
+                "properties": {
+                    "name": {
+                        "bsonType": "string",
+                        "description": "物資名稱"
+                    },
+                    "category": {
+                        "bsonType": "string",
+                        "enum": [ "food", "water", "medicine", "equipment", "seed", "fertilizer", "emergency" ],
+                        "description": "物資分類"
+                    },
+                    "quantity": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "description": "庫存數量"
+                    },
+                    "unit": {
+                        "bsonType": "string",
+                        "description": "計量單位"
+                    },
+                    "expiryDate": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "保存期限"
+                    },
+                    "location": {
+                        "bsonType": "object",
+                        "properties": {
+                            "warehouse": { "bsonType": "string" },
+                            "section": { "bsonType": "string" },
+                            "shelf": { "bsonType": "string" }
+                        }
+                    },
+                    "status": {
+                        "bsonType": "string",
+                        "enum": [ "available", "reserved", "expired", "damaged", "in_transit" ],
+                        "description": "物資狀態"
+                    },
+                    "supplier": {
+                        "bsonType": "string",
+                        "description": "供應商"
+                    },
+                    "cost": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "description": "成本"
+                    },
+                    "criticalLevel": {
+                        "bsonType": "number",
+                        "minimum": 0,
+                        "description": "警戒庫存量"
+                    },
+                    "createdAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "建立時間"
+                    },
+                    "updatedAt": {
+                        "bsonType": "string",
+                        "title": "datetime",
+                        "description": "更新時間"
+                    }
+                },
+                "additionalProperties": true
+            }
+        },
+        "validationLevel": "moderate",
+        "validationAction": "warn"
+    }
+}
